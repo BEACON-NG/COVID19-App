@@ -9,6 +9,12 @@ class News extends StatefulWidget {
 
 class _NewsState extends State<News> {
   
+  Container newsItem(String title,String time,String img){
+    return Container(
+      child:Text("what popaing")
+    );
+  }
+
   Container button(String text){
     return Container(
             width: 120,
@@ -56,9 +62,10 @@ class _NewsState extends State<News> {
               child:Text("Lattest news")
             ),
             Container(
-              color:Colors.yellow,
-              // width:MediaQuery.of(context).size.width/10 * 8,
-              // height:400,
+              color:Color.fromRGBO(36, 37, 134, 1),
+              width:MediaQuery.of(context).size.width/10 * 8,
+              height:230,
+              margin: EdgeInsets.symmetric(vertical: 10),
               child:Column(
                 children:<Widget>[
                   Container(
@@ -71,6 +78,14 @@ class _NewsState extends State<News> {
             ),
             Container(
               child:Text("Hot news")
+            ),
+            Container(
+              child:Column(
+                children:<Widget>[
+                  newsItem("title","time","img"),
+                  newsItem("title","time","img"),
+                ]
+              )
             )
           ]
           )
