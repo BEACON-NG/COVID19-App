@@ -19,10 +19,11 @@ class _NewsState extends State<News> {
             width:300,
             decoration:boxDecoration(),
             margin: EdgeInsets.symmetric(vertical: 20),
-            padding:EdgeInsets.all(22),
+            padding:EdgeInsets.all(15),
             child: Row(
               children:<Widget>[
                 Expanded(
+                    flex: 5,
                     child: Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,20 +41,18 @@ class _NewsState extends State<News> {
                     ),
                   ),
               ),
-            Center(
-              child: Container(
-                width: 70,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/coro.png"),
-                    fit: BoxFit.cover)
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: Container(
+                  child:Image.asset("assets/images/coro.png")                // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.cover)),
+                  ),
                 ),
-            ),
             )
-          ]
+            ]
+          ),
         ),
-      ),
-    );
+      );
   }
   Container headLineText(String text){
     return Container(
@@ -76,7 +75,7 @@ class _NewsState extends State<News> {
                   style:TextStyle(
                     color:Colors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.w500
                   )
                 )
             );
@@ -99,31 +98,33 @@ class _NewsState extends State<News> {
                 borderRadius: BorderRadius.all(Radius.circular(5.0))
               );
   }
-//   GestureDetector button(bool state,String text){
-//   Color color = state ? Colors.blue : Colors.white;
-//   return GestureDetector(
-//         onTap: (){
-//           Map<String,bool> new_region = region;
-//           new_region[text] = true;
-//           new_region[ text == "international" ? "local":"international"] = false
-//               region = new_region;
-//           });
-//         },
-//         child: Container(
-//             decoration:boxDecoration(color:color),
-//             width: 120,
-//             height: 30,
-//             padding:EdgeInsets.fromLTRB(20, 6, 20, 6),
-//             child:Center(
-//               child:Text(
-//                 text,
-//                 style:TextStyle(
-//                   color:state ? Colors.white : Colors.blue 
-//                   )
-//                 ),
-//               )
-//             );
-// };
+  GestureDetector button(bool state,String text){
+    Color color = state ? Colors.blue : Colors.white;
+    return GestureDetector(
+          onTap: (){
+            Map<String,bool> new_region = region;
+            new_region[text] = true;
+            new_region[ text == "international" ? "local":"international"] = false;
+            setState((){
+              region = new_region;
+            });
+          },
+          child: Container(
+              decoration:boxDecoration(color:color),
+              width: 120,
+              height: 30,
+              padding:EdgeInsets.fromLTRB(20, 6, 20, 6),
+              child:Center(
+                child:Text(
+                  text,
+                  style:TextStyle(
+                    color:state ? Colors.white : Colors.blue 
+                    )
+                  ),
+                )
+              )
+            );
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -147,8 +148,8 @@ class _NewsState extends State<News> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                 children:<Widget>[
-                  // button(region["local"],"local"),
-                  // button(region["international"],"international"),
+                  button(region["local"],"local"),
+                  button(region["international"],"international"),
                 ]
               )
             ),
@@ -160,9 +161,12 @@ class _NewsState extends State<News> {
               margin: EdgeInsets.symmetric(vertical: 2),
               padding:EdgeInsets.all(5),
               child:Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children:<Widget>[
-                  Container(
-                    child:Text("headline image")
+                  Expanded(
+                    child: Container(
+                        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.fill)),
+                    ),
                   ),
                   newTitle("crona don full every whee o,corona corona")
                 ]
