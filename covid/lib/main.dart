@@ -1,12 +1,19 @@
+import 'package:covid/models/country.dart';
+import 'package:covid/provider/getCountries.dart';
 import 'package:covid/views/home.dart';
+import 'package:covid/views/statistics.dart';
 import 'package:covid/views/news.dart';
 import 'package:flutter/material.dart';
 import 'package:covid/views/contact.dart';
 import 'package:covid/views/volunteer.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-void main() => runApp(MyApp());
-
+//void main() => runApp(MyApp());
+List<Country> countries;
+void main() async{
+  countries = await getCountries();
+  runApp(MyApp());
+}
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -32,7 +39,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> pages = [
-    Home(key:PageStorageKey("home")),
+//    Home(key:PageStorageKey("home")),
+    Home(key:PageStorageKey("home"), countries:countries),
     News(key:PageStorageKey("news")),
     Contact(key:PageStorageKey("contact")),
     Volunteer(key:PageStorageKey("volunteer")),
