@@ -99,7 +99,8 @@ class _NewsState extends State<News> {
               );
   }
   GestureDetector button(bool state,String text){
-    Color color = state ? Colors.blue : Colors.white;
+    Color themeColor = Color.fromRGBO(36, 37, 134, 1);
+    Color color = state ? themeColor : Colors.white;
     return GestureDetector(
           onTap: (){
             Map<String,bool> new_region = region;
@@ -118,7 +119,7 @@ class _NewsState extends State<News> {
                 child:Text(
                   text,
                   style:TextStyle(
-                    color:state ? Colors.white : Colors.blue 
+                    color:state ? Colors.white : themeColor 
                     )
                   ),
                 )
