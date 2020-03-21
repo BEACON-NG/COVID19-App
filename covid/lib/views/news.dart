@@ -18,12 +18,12 @@ class _NewsState extends State<News> {
           child: Container(
             width:300,
             decoration:boxDecoration(),
-            margin: EdgeInsets.symmetric(vertical: 20),
+            margin: EdgeInsets.only(bottom: 10),
             padding:EdgeInsets.all(15),
             child: Row(
               children:<Widget>[
                 Expanded(
-                    flex: 5,
+                    flex: 8,
                     child: Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,8 +74,8 @@ class _NewsState extends State<News> {
                   title,
                   style:TextStyle(
                     color:Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600
                   )
                 )
             );
@@ -142,9 +142,11 @@ class _NewsState extends State<News> {
       body:Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child:Column(
+        child:ListView(
           children:<Widget>[
-            Container(
+            Column(
+              children:<Widget>[
+                Container(
               child:Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment:MainAxisAlignment.spaceEvenly,
@@ -179,8 +181,13 @@ class _NewsState extends State<News> {
               child:Column(
                 children:<Widget>[
                   newsCard(),
+                  newsCard(),
+                  newsCard(),
+                  newsCard(),
                 ]
               )
+            )
+              ]
             )
           ]
           )
