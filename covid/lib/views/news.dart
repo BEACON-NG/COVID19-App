@@ -8,28 +8,122 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
-  
-  Container newsItem(String title,String time,String img){
-    return Container(
-      child:Text("what popaing")
+    Map<String,bool> region = {
+    "local":true,
+    "international":false,
+	};
+
+  GestureDetector newsCard() {
+    return GestureDetector(
+          child: Container(
+            width:300,
+            decoration:boxDecoration(),
+            margin: EdgeInsets.symmetric(vertical: 20),
+            padding:EdgeInsets.all(22),
+            child: Row(
+              children:<Widget>[
+                Expanded(
+                    child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:<Widget>[
+                        newTitle("this is a new lattest story"),
+                        SizedBox(height:5),
+                        Text(
+                          "1hr ago",
+                          style:TextStyle(
+                            color:Colors.black,
+                            fontSize:11
+                          )
+                        )
+                      ]
+                    ),
+                  ),
+              ),
+            Center(
+              child: Container(
+                width: 70,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/coro.png"),
+                    fit: BoxFit.cover)
+                ),
+            ),
+            )
+          ]
+        ),
+      ),
     );
   }
-
-  Container button(String text){
+  Container headLineText(String text){
     return Container(
-            width: 120,
-            height: 30,
-            padding:EdgeInsets.fromLTRB(20, 6, 20, 6),
-            color:Colors.red,
-            child:Center(
+          padding:EdgeInsets.all(10),
+          alignment: Alignment.topLeft,
+          child:Text(
+            text,
+            style:TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            )
+          )
+        );
+  }
+  Container newTitle(String title){
+        return Container(
+              alignment:Alignment.topLeft,
               child:Text(
-                text,
-                style:TextStyle(
-                  color:Colors.black
-                )),
-              )
+                  title,
+                  style:TextStyle(
+                    color:Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
+                  )
+                )
             );
-  }  
+  }
+  BoxDecoration boxDecoration({Color color = Colors.white}){
+    return BoxDecoration(
+                color: color,
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 0.1,
+                    blurRadius:4,
+                    color:Colors.grey,
+                    offset:Offset(2,3)
+                  )
+                ],
+                border: Border.all(
+                          width:0.2,
+                          color: Color.fromRGBO(128, 128, 12, 1)
+                        ),
+                borderRadius: BorderRadius.all(Radius.circular(5.0))
+              );
+  }
+//   GestureDetector button(bool state,String text){
+//   Color color = state ? Colors.blue : Colors.white;
+//   return GestureDetector(
+//         onTap: (){
+//           Map<String,bool> new_region = region;
+//           new_region[text] = true;
+//           new_region[ text == "international" ? "local":"international"] = false
+//               region = new_region;
+//           });
+//         },
+//         child: Container(
+//             decoration:boxDecoration(color:color),
+//             width: 120,
+//             height: 30,
+//             padding:EdgeInsets.fromLTRB(20, 6, 20, 6),
+//             child:Center(
+//               child:Text(
+//                 text,
+//                 style:TextStyle(
+//                   color:state ? Colors.white : Colors.blue 
+//                   )
+//                 ),
+//               )
+//             );
+// };
 
   @override
   Widget build(BuildContext context) {
@@ -53,37 +147,33 @@ class _NewsState extends State<News> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment:MainAxisAlignment.spaceEvenly,
                 children:<Widget>[
-                  button("local"),
-                  button("interational"),
+                  // button(region["local"],"local"),
+                  // button(region["international"],"international"),
                 ]
               )
             ),
+            headLineText("Lattest news"),
             Container(
-              child:Text("Lattest news")
-            ),
-            Container(
-              color:Color.fromRGBO(36, 37, 134, 1),
+              decoration: boxDecoration(),
               width:MediaQuery.of(context).size.width/10 * 8,
               height:230,
-              margin: EdgeInsets.symmetric(vertical: 10),
+              margin: EdgeInsets.symmetric(vertical: 2),
+              padding:EdgeInsets.all(5),
               child:Column(
                 children:<Widget>[
                   Container(
                     child:Text("headline image")
-                  ),Container(
-                    child:Text("headline title")
-                  )
+                  ),
+                  newTitle("crona don full every whee o,corona corona")
                 ]
               )
             ),
-            Container(
-              child:Text("Hot news")
-            ),
+            headLineText("Hot news")
+            ,
             Container(
               child:Column(
                 children:<Widget>[
-                  newsItem("title","time","img"),
-                  newsItem("title","time","img"),
+                  newsCard(),
                 ]
               )
             )
