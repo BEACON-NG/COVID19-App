@@ -18,7 +18,7 @@ class _SelectedNewsState extends State<SelectedNews> {
         ),
         body: Center(
           child: Container(
-            child: Text('Hello World'),
+            child: Text('HelloWorld'),
           ),
         ),
       ),
