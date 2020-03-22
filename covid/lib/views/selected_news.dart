@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
  
 void main() => runApp(SelectedNews());
  
@@ -10,17 +11,17 @@ class SelectedNews extends StatefulWidget {
 }
 
 class _SelectedNewsState extends State<SelectedNews> {
-  bool _pinned = false;
+  bool _pinned = true;
   bool _snap = true;
-  bool _floating = false;
+  bool _floating = true;
   Color color = Color.fromRGBO(36, 37, 130, 1);
 
-  Flex social(){
+  Flex social(IconData icon){
     return Flex(
       direction: Axis.horizontal,
       children: <Widget>[
-        Icon(
-              Icons.headset,
+            Icon(
+              icon,
               size:32,
               color:color
             ),
@@ -43,8 +44,8 @@ class _SelectedNewsState extends State<SelectedNews> {
         child:Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            social(),
-            social(),
+            social(FontAwesome5Solid.heart),
+            social(Icons.comment),
           ])
           )
     );
@@ -122,6 +123,7 @@ class _SelectedNewsState extends State<SelectedNews> {
                         ],
                       ),
                     ),
+
                     Column(
                       children:<Widget>[
                           newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
@@ -133,7 +135,7 @@ class _SelectedNewsState extends State<SelectedNews> {
                           newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
                           newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
                           newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-      ]
+                    ]
                     )
                   ]
                 )
