@@ -1,6 +1,5 @@
 import 'package:covid/views/home.dart';
 import 'package:covid/views/news.dart';
-import 'package:covid/views/selected_news.dart';
 import 'package:flutter/material.dart';
 import 'package:covid/views/contact.dart';
 import 'package:covid/views/volunteer.dart';
@@ -34,8 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> pages = [
     Home(key:PageStorageKey("home")),
-    // News(key:PageStorageKey("news")),
-    SelectedNews(key:PageStorageKey("news")),
+    News(key:PageStorageKey("news")),
     Contact(key:PageStorageKey("contact")),
     Volunteer(key:PageStorageKey("volunteer")),
   ];
