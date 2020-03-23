@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-Map<String, List<News>> newsFromJson(String str) => Map.from(json.decode(str)).map((k, v) => MapEntry<String, List<News>>(k, List<News>.from(v.map((x) => News.fromJson(x)))));
+Map<String, List<NewsModel>> newsFromJson(String str) => Map.from(json.decode(str)).map((k, v) => MapEntry<String, List<NewsModel>>(k, List<NewsModel>.from(v.map((x) => NewsModel.fromJson(x)))));
 
-String newsToJson(Map<String, List<News>> data) => json.encode(Map.from(data).map((k, v) => MapEntry<String, dynamic>(k, List<dynamic>.from(v.map((x) => x.toJson())))));
+String newsToJson(Map<String, List<NewsModel>> data) => json.encode(Map.from(data).map((k, v) => MapEntry<String, dynamic>(k, List<dynamic>.from(v.map((x) => x.toJson())))));
 
 
-class News{
+class NewsModel{
     
     String author;
     String content;
@@ -15,7 +15,7 @@ class News{
     String url;
     String urlToImage;
 
-    News({
+    NewsModel({
       this.author,
       this.content,
       this.description,
@@ -25,7 +25,7 @@ class News{
       this.urlToImage
     });
 
-    factory News.fromJson(Map<String, dynamic> json) => News(
+    factory NewsModel.fromJson(Map<String, dynamic> json) => NewsModel(
       author: json["author"],
       content: json["content"],
       description: json["description"],

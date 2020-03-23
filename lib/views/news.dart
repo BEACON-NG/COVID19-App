@@ -1,3 +1,5 @@
+import 'package:covid/models/NewsModel.dart';
+import 'package:covid/provider/NewsProvider.dart';
 import 'package:flutter/material.dart';
 
 class News extends StatefulWidget {
@@ -12,6 +14,13 @@ class _NewsState extends State<News> {
     "local":true,
     "international":false,
 	};
+  Future<Map<String, List<NewsModel>>> listOfNews;
+  Future<Map<String, List<NewsModel>>> lattestNews () {
+    Future<Map<String, List<NewsModel>>> result = getNewsModel();
+    setState((){
+      listOfNews = result;
+    });
+  }
 
   GestureDetector newsCard() {
     return GestureDetector(
@@ -129,6 +138,8 @@ class _NewsState extends State<News> {
 
   @override
   Widget build(BuildContext context) {
+    print(listOfNews);
+    lattestNews();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
