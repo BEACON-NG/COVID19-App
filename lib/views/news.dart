@@ -1,6 +1,7 @@
 import 'package:covid/models/NewsModel.dart';
 import 'package:covid/provider/NewsProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class News extends StatefulWidget {
   News({Key key}) : super(key: key);
@@ -135,22 +136,8 @@ class _NewsState extends State<News> {
               )
             );
     }
-
-  @override
-  Widget build(BuildContext context) {
-    print(listOfNews);
-    lattestNews();
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
-        title: Text("News", style: TextStyle(
-          color: Color.fromRGBO(36, 37, 130, 1),fontSize: 30,
-        ),),
-      ),
-      backgroundColor: Colors.white,
-      body:Container(
+  Container newsResult(){
+    return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child:ListView(
@@ -202,7 +189,39 @@ class _NewsState extends State<News> {
             )
           ]
           )
-        )  
       );
+  }
+  /*
+    this function is a loading spinner 
+    that would be rendered before the
+    new data comes in
+  */
+  SpinKitFadingCircle loadingSpinner(){
+      Color color = Color.fromRGBO(36, 37, 130, 1);
+      return SpinKitFadingCircle(
+        size: 100.0,
+        itemBuilder: (BuildContext context, int index) {
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: index.isEven ? color : color,
+            ),
+          );
+        },
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        title: Text("News", style: TextStyle(
+          color: Color.fromRGBO(36, 37, 130, 1),fontSize: 30,
+        ),),
+      ),
+      backgroundColor: Colors.white,
+      body:(listOfNews == null ?  loadingSpinner() : newsResult()));
   }
 }
