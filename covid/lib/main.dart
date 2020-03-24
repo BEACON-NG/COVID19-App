@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:covid/views/contact.dart';
 import 'package:covid/views/volunteer.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-
 //void main() => runApp(MyApp());
 List<Country> countries;
 void main() async{
@@ -50,34 +49,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
-    fixedColor:  Colors.white,
-    unselectedItemColor: Colors.white70,
-    iconSize: 25,
+    fixedColor:  Color.fromARGB(1, 36, 37, 130).withOpacity(1),
+    unselectedItemColor: Color.fromARGB(1, 36, 37, 130).withOpacity(1),
+//    iconSize: 25,
     onTap: (int index) => setState(() => _selectedIndex = index),
     currentIndex: selectedIndex,
     items: const <BottomNavigationBarItem>[
       BottomNavigationBarItem(
-          icon: Icon(FontAwesome5Solid.home), title: Text('')),
+          icon: Icon(Feather.home), title: Text('Home')),
       BottomNavigationBarItem(
-          icon: Icon(FontAwesome5Solid.newspaper), title: Text('')),
+          icon: Icon(FontAwesome.newspaper_o), title: Text('News')),
       BottomNavigationBarItem(
-          icon: Icon(SimpleLineIcons.phone), title: Text('')),
+          icon: Icon(SimpleLineIcons.phone), title: Text('Hotlines')),
       BottomNavigationBarItem(
-          icon: Icon(FontAwesome5Solid.handshake), title: Text('')),
+          icon: Icon(FontAwesome.handshake_o), title: Text('Volunteer')),
     ],
   );
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Color.fromRGBO(36, 37, 134, 1)
-          ),
-          child: _bottomNavigationBar(_selectedIndex)),
-      body: PageStorage(
-        child: pages[_selectedIndex],
-        bucket: bucket,
-      ),
-    );
+    return Statistics();
+//    return Scaffold(
+//      bottomNavigationBar: Theme(
+//          data: Theme.of(context).copyWith(
+//            canvasColor: Color.fromRGBO(255,255,255, 1)
+//          ),
+//          child: _bottomNavigationBar(_selectedIndex)),
+//      body: PageStorage(
+//        child: pages[_selectedIndex],
+//        bucket: bucket,
+//      ),
+//    );
   }
 }
