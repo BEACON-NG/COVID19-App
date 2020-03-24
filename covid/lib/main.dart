@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:covid/models/country.dart';
 import 'package:covid/provider/getCountries.dart';
+import 'package:covid/provider/secureStorage.dart';
 import 'package:covid/views/home.dart';
 import 'package:covid/views/statistics.dart';
 import 'package:covid/views/news.dart';
@@ -10,32 +11,24 @@ import 'package:covid/views/contact.dart';
 import 'package:covid/views/volunteer.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:cron/cron.dart';
 
 //void main() => runApp(MyApp());          fe9d39d1-d20a-4437-b3f5-ac142af0d280    this is onesignal app id
 List<Country> countries;
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
 
-  await Workmanager.initialize(callbackDispatcher, // The top level function, aka callbackDispatcher
-      isInDebugMode: false // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  );
-  await Workmanager.registerOneOffTask(
-    "1",
-    simpleTaskKey,
-    existingWorkPolicy: ExistingWorkPolicy.replace,
-//    initialDelay: Duration(seconds: 5),
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  var cron = Cron();
+  cron.schedule(Schedule(hours: 20), () async{
+      storage.delete(key: "locationdata") ;
+      storage.delete(key: "locationBasedData") ;
+      storage.delete(key: "country") ;
+      storage.delete(key: "worldtotalData") ;
+
+  });
+
   runApp(MyApp());
   countries = await getCountries();
-}
-void callbackDispatcher() {
-  Workmanager.executeTask((task, inputData) {
-    Timer.periodic(Duration(days: 1), (Timer t) {
-      
-    }); //simpleTask will be emitted here.
-    return Future.value(true);
-  });
 }
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -68,15 +61,50 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     initnotify();
   }
+  String titlw;
   Future<void> initnotify() async{
+
+    if (!mounted) return;
+
+    OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+
+//    OneSignal.shared.setRequiresUserPrivacyConsent(true);
+
     OneSignal.shared.init("fe9d39d1-d20a-4437-b3f5-ac142af0d280",iOSSettings: {
       OSiOSSettings.autoPrompt: false,
       OSiOSSettings.inAppLaunchUrl : true
     });
 
     OneSignal.shared.setNotificationReceivedHandler((OSNotification notification) {
+      setState(() {
+        titlw = notification.payload.title;
+      });
       // will be called whenever a notification is received
     });
+
+    OneSignal.shared
+        .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+        if(titlw == "news"){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyHomePage(),
+              ));
+          setState(() {
+            _selectedIndex = 1;
+          });
+        }else{
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Statistics(),
+              ));
+        }
+    });
+
+
+
+
   }
 
   final List<Widget> pages = [
