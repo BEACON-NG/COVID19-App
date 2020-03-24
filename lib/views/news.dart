@@ -152,16 +152,19 @@ class _NewsState extends State<News> {
               )
             );
     }
-  dynamic getHeadlines(){
+  void getHeadlines(){
     dynamic lattestHeadlines;
-    for (dynamic i in result){
-        if(i["urlToImage"] != null ) ;
+    for (var i = 0; i < result.length; i++) {
+        if(result[i]["urlToImage"] != null){
+          lattestHeadlines = result[i];
+          result.removeAt(i);
+          break;
+        };
     }
     headline = lattestHeadlines;
   }
   Container newsResult(){
     getHeadlines();
-    print(result);
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -191,7 +194,8 @@ class _NewsState extends State<News> {
                 children:<Widget>[
                   Expanded(
                     child: Container(
-                        decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.fill)),
+                        child:Image.network(headline["urlToImage"])
+                        // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.fill)),
                     ),
                   ),
                   newTitle(headline["title"])
