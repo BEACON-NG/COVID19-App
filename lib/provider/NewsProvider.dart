@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:covid/endpoints/index.dart';
 import 'package:http/http.dart' as http;
 

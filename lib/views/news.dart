@@ -132,6 +132,7 @@ class _NewsState extends State<News> {
               result = null;
             });
             text == "international" ? lattestNews(country: "us"):lattestNews(country: "ng");
+            new_region.clear();
           },
           child: Container(
               decoration:boxDecoration(color:color),
