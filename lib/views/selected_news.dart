@@ -16,6 +16,7 @@ class _SelectedNewsState extends State<SelectedNews> {
   bool _floating = true;
   Color color = Color.fromRGBO(36, 37, 130, 1);
   dynamic data;
+  
   // Flex social(IconData icon){
   //   return Flex(
   //     direction: Axis.horizontal,
