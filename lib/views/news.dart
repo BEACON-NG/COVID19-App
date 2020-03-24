@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:covid/models/NewsModel.dart';
 import 'package:covid/provider/NewsProvider.dart';
 import 'package:covid/views/selected_news.dart';
 import 'package:flutter/material.dart';
