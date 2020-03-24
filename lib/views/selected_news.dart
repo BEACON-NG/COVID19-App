@@ -4,7 +4,8 @@ import 'package:flutter_icons/flutter_icons.dart';
 void main() => runApp(SelectedNews());
  
 class SelectedNews extends StatefulWidget {
-  SelectedNews({Key key}) : super(key: key);
+  final dynamic data;
+  SelectedNews({this.data});
  
   @override
   _SelectedNewsState createState() => _SelectedNewsState();
@@ -15,70 +16,65 @@ class _SelectedNewsState extends State<SelectedNews> {
   bool _snap = true;
   bool _floating = true;
   Color color = Color.fromRGBO(36, 37, 130, 1);
+  dynamic data;
+  // Flex social(IconData icon){
+  //   return Flex(
+  //     direction: Axis.horizontal,
+  //     children: <Widget>[
+  //           Icon(
+  //             icon,
+  //             size:32,
+  //             color:color
+  //           ),
+  //           SizedBox(width:3),
+  //           Text(
+  //             "20",
+  //             style:TextStyle(
+  //               fontSize: 14,
+  //               fontWeight:FontWeight.w500,
+  //               color:color
+  //             )
+  //           )
+  //     ],
+  //   );
+  // }
 
-  Map<String,String> data = {
-        "content":"A teenager aged just 18 has died in the UK one day after testing positive for COVID-19, according to officials. I/flutter (23306): The unidentified teen died in University Hospital in  and is believed to be the youngest of 281 fatalities linked to the pandemic in the U… [+609 chars], description: A teenager aged just 18 has died in the UK — one day after testing positive for COVID-19, according to officials.The unidentified teen died in University",
-        "title": "Teen dies one day after testing positive for coronavirus - The Nation Newspaper",
-        "urlToImage": "https://thenationonlineng.net/wp-content]/uploads/2020/03/COVID-19-4.jpg"
-  };
+  // Expanded left(){
+  //   return Expanded(
+  //     child:Container(
+  //       child:Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //         children: <Widget>[
+  //           social(FontAwesome5Solid.heart),
+  //           social(Icons.comment),
+  //         ])
+  //         )
+  //   );
+  // }
+  // Container rightIcons(){
+  //   return Container(
+  //     child:Flex(
+  //       direction: Axis.horizontal,
+  //       children: <Widget>[
+  //         Icon(Icons.share,color:color,size:32),
+  //         SizedBox(width:8),
+  //         Icon(Icons.save,color:color,size:32),
+  //       ],
+  //     )
+  //   );
+  // }
 
-  Flex social(IconData icon){
-    return Flex(
-      direction: Axis.horizontal,
-      children: <Widget>[
-            Icon(
-              icon,
-              size:32,
-              color:color
-            ),
-            SizedBox(width:3),
-            Text(
-              "20",
-              style:TextStyle(
-                fontSize: 14,
-                fontWeight:FontWeight.w500,
-                color:color
-              )
-            )
-      ],
-    );
-  }
-
-  Expanded left(){
-    return Expanded(
-      child:Container(
-        child:Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            social(FontAwesome5Solid.heart),
-            social(Icons.comment),
-          ])
-          )
-    );
-  }
-  Container rightIcons(){
-    return Container(
-      child:Flex(
-        direction: Axis.horizontal,
-        children: <Widget>[
-          Icon(Icons.share,color:color,size:32),
-          SizedBox(width:8),
-          Icon(Icons.save,color:color,size:32),
-        ],
-      )
-    );
-  }
-  Expanded right(){
-    return Expanded(
-          child: Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                rightIcons()
-              ]),
-      ),
-    );
-  }
+  // Expanded right(){
+  //   return Expanded(
+  //         child: Container(
+  //           child: Row(
+  //             mainAxisAlignment: MainAxisAlignment.end,
+  //             children: <Widget>[
+  //               rightIcons()
+  //             ]),
+  //     ),
+  //   );
+  // }
 
   Container newsText(String text){
     return Container(
@@ -91,6 +87,7 @@ class _SelectedNewsState extends State<SelectedNews> {
   }
   @override
   Widget build(BuildContext context) {
+    data = widget.data; 
     return MaterialApp(
       title: 'Material App',
       home: Scaffold(
@@ -106,7 +103,7 @@ class _SelectedNewsState extends State<SelectedNews> {
                 title:  Text(
                     data["title"],
                     style:TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 14
                     )),
                 background: Image.network(data["urlToImage"],fit: BoxFit.fill),
@@ -115,16 +112,16 @@ class _SelectedNewsState extends State<SelectedNews> {
             SliverList(
               delegate: SliverChildListDelegate(
                   [
-                    Container(
-                      padding:EdgeInsets.all(10),
-                      width:MediaQuery.of(context).size.width,
-                      child: Row(
-                        children: <Widget>[
-                          left(),
-                          right(),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding:EdgeInsets.all(10),
+                    //   width:MediaQuery.of(context).size.width,
+                    //   child: Row(
+                    //     children: <Widget>[
+                    //       left(),
+                    //       right(),
+                    //     ],
+                    //   ),
+                    // ),
 
                     Column(
                       children:<Widget>[

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:covid/models/NewsModel.dart';
 import 'package:covid/provider/NewsProvider.dart';
+import 'package:covid/views/selected_news.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -33,10 +34,8 @@ class _NewsState extends State<News> {
   }
   dynamic headline;
   GestureDetector newsCard(dynamic article) {
-    print("       ");
-    print(article);
-    print("       ");
     return GestureDetector(
+          onTap:()=> Navigator.push(context,MaterialPageRoute(builder:(context) => SelectedNews(data: article))),
           child: Container(
             width:300,
             decoration:boxDecoration(),
@@ -163,57 +162,59 @@ class _NewsState extends State<News> {
     }
     headline = lattestHeadlines;
   }
-  Container newsResult(){
+  GestureDetector newsResult(){
     getHeadlines();
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child:ListView(
-          children:<Widget>[
-            Column(
+    return GestureDetector(
+            onTap:()=> Navigator.push(context,MaterialPageRoute(builder:(context) => SelectedNews(data:headline))),
+            child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child:ListView(
               children:<Widget>[
+                Column(
+                  children:<Widget>[
+                    Container(
+                  child:Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                    children:<Widget>[
+                      button(region["local"],"local"),
+                      button(region["international"],"international"),
+                    ]
+                  )
+                ),
+                headLineText("Lattest news"),
                 Container(
-              child:Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-                children:<Widget>[
-                  button(region["local"],"local"),
-                  button(region["international"],"international"),
-                ]
-              )
-            ),
-            headLineText("Lattest news"),
-            Container(
-              decoration: boxDecoration(),
-              width:MediaQuery.of(context).size.width/10 * 8,
-              height:230,
-              margin: EdgeInsets.symmetric(vertical: 2),
-              padding:EdgeInsets.all(5),
-              child:Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children:<Widget>[
-                  Expanded(
-                    child: Container(
-                        child:Image.network(headline["urlToImage"])
-                        // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.fill)),
-                    ),
-                  ),
-                  newTitle(headline["title"])
-                ]
-              )
-            ),
-            headLineText("Hot news")
-            ,
-            Container(
-              child:Column(
-                children:listOfWidget()
-              )
-            )
+                  decoration: boxDecoration(),
+                  width:MediaQuery.of(context).size.width/10 * 8,
+                  height:230,
+                  margin: EdgeInsets.symmetric(vertical: 2),
+                  padding:EdgeInsets.all(5),
+                  child:Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children:<Widget>[
+                      Expanded(
+                        child: Container(
+                            child:Image.network(headline["urlToImage"])
+                        ),
+                      ),
+                      newTitle(headline["title"])
+                    ]
+                  )
+                ),
+                headLineText("Hot news")
+                ,
+                Container(
+                  child:Column(
+                    children:listOfWidget()
+                  )
+                )
+                  ]
+                )
               ]
-            )
-          ]
-          )
-      );
+              )
+          ),
+    );
   }
   /*
     this function is a loading spinner 
