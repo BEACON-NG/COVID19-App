@@ -22,7 +22,7 @@ void main() async{
   );
   await Workmanager.registerOneOffTask(
     "1",
-    simpleTaskKey,
+    //simpleTaskKey,
     existingWorkPolicy: ExistingWorkPolicy.replace,
 //    initialDelay: Duration(seconds: 5),
   );
