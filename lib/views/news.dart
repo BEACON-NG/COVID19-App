@@ -65,7 +65,7 @@ class _NewsState extends State<News> {
               flex: 2,
               child: Center(
                 child: Container(
-                  child:Image.asset("assets/images/coro.png")                // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.cover)),
+                  child:article["urlToImage"] != null ? Image.network(article["urlToImage"]): SizedBox(width:2)                // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.cover)),
                   ),
                 ),
             )
@@ -154,14 +154,14 @@ class _NewsState extends State<News> {
     }
   dynamic getHeadlines(){
     dynamic lattestHeadlines;
-    if(result.length >  1){
-      lattestHeadlines = json.decode(json.encode(result[0]));
-      result.removeAt(0);
-    } 
+    for (dynamic i in result){
+        if(i["urlToImage"] != null ) ;
+    }
     headline = lattestHeadlines;
   }
   Container newsResult(){
     getHeadlines();
+    print(result);
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
