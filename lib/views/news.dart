@@ -25,15 +25,17 @@ class _NewsState extends State<News> {
 	};
 
   List<dynamic> result;
-  void lattestNews () async {
-    String see = await getNewsModel(); 
+  void lattestNews ({String country = 'ng'}) async {
+    String see = await getNewsModel(country:country); 
     setState((){
       result = json.decode(see)["articles"];
     });
   }
   dynamic headline;
   GestureDetector newsCard(dynamic article) {
-    
+    print("       ");
+    print(article);
+    print("       ");
     return GestureDetector(
           child: Container(
             width:300,
@@ -118,12 +120,8 @@ class _NewsState extends State<News> {
                 borderRadius: BorderRadius.all(Radius.circular(5.0))
               );
   }
-  List<Widget> listOfWidget(){
-    return result.map((news){
-      return newsCard(news);
-      }).toList();
+  List<Widget> listOfWidget() => result.map((news) => news["urlToImage"] != null ? newsCard(news) : SizedBox(width:1)).toList();
 
-  }
   GestureDetector button(bool state,String text){
     Color themeColor = Color.fromRGBO(36, 37, 134, 1);
     Color color = state ? themeColor : Colors.white;
@@ -134,7 +132,9 @@ class _NewsState extends State<News> {
             new_region[ text == "international" ? "local":"international"] = false;
             setState((){
               region = new_region;
+              result = null;
             });
+            text == "international" ? lattestNews(country: "us"):lattestNews(country: "ng");
           },
           child: Container(
               decoration:boxDecoration(color:color),

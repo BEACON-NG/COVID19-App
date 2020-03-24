@@ -16,6 +16,12 @@ class _SelectedNewsState extends State<SelectedNews> {
   bool _floating = true;
   Color color = Color.fromRGBO(36, 37, 130, 1);
 
+  Map<String,String> data = {
+        "content":"A teenager aged just 18 has died in the UK one day after testing positive for COVID-19, according to officials. I/flutter (23306): The unidentified teen died in University Hospital in  and is believed to be the youngest of 281 fatalities linked to the pandemic in the U… [+609 chars], description: A teenager aged just 18 has died in the UK — one day after testing positive for COVID-19, according to officials.The unidentified teen died in University",
+        "title": "Teen dies one day after testing positive for coronavirus - The Nation Newspaper",
+        "urlToImage": "https://thenationonlineng.net/wp-content]/uploads/2020/03/COVID-19-4.jpg"
+  };
+
   Flex social(IconData icon){
     return Flex(
       direction: Axis.horizontal,
@@ -98,21 +104,17 @@ class _SelectedNewsState extends State<SelectedNews> {
               expandedHeight: 250.0,
               flexibleSpace: FlexibleSpaceBar(
                 title:  Text(
-                    "Lattest news corona virus don catch 10 new people o",
+                    data["title"],
                     style:TextStyle(
                       color: Colors.black,
                       fontSize: 14
                     )),
-                background: Image.asset(
-                  'assets/images/coro.png',
-                  fit: BoxFit.fill,
-                ),
+                background: Image.network(data["urlToImage"],fit: BoxFit.fill),
               ),
             ),
             SliverList(
               delegate: SliverChildListDelegate(
                   [
-
                     Container(
                       padding:EdgeInsets.all(10),
                       width:MediaQuery.of(context).size.width,
@@ -126,15 +128,7 @@ class _SelectedNewsState extends State<SelectedNews> {
 
                     Column(
                       children:<Widget>[
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
-                          newsText("so fa this is the lattest news about corna virus ,the virus just they spread every whee oo coroco leave us a lone oo"),
+                          newsText(data["content"]),
                     ]
                     )
                   ]
