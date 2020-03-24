@@ -67,17 +67,17 @@ class _MyHomePageState extends State<MyHomePage> {
   );
   @override
   Widget build(BuildContext context) {
-    return Statistics();
-//    return Scaffold(
-//      bottomNavigationBar: Theme(
-//          data: Theme.of(context).copyWith(
-//            canvasColor: Color.fromRGBO(255,255,255, 1)
-//          ),
-//          child: _bottomNavigationBar(_selectedIndex)),
-//      body: PageStorage(
-//        child: pages[_selectedIndex],
-//        bucket: bucket,
-//      ),
-//    );
+//    return Statistics();
+    return Scaffold(
+      bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Color.fromRGBO(255,255,255, 1)
+          ),
+          child: _bottomNavigationBar(_selectedIndex)),
+      body: PageStorage(
+        child: pages[_selectedIndex],
+        bucket: bucket,
+      ),
+    );
   }
 }
