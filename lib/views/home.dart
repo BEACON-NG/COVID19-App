@@ -46,7 +46,6 @@ class _HomeState extends State<Home> {
         FutureBuilder <Map <String, List<Covids>>>(
             future: getData(),
             builder: (context, snapshot){
-            if (snapshot.hasError) print(snapshot.error);
             double perconfirmed = 0;
             double perdeaths = 0;
             double perrecovered = 0;
@@ -71,7 +70,6 @@ class _HomeState extends State<Home> {
             snapshot.data.forEach((String key, List<Covids> c)=>{
               worldtotal = worldtotal + snapshot.data[key
               ].last.confirmed,
-              print(worldtotal),
             });
 
 
@@ -226,7 +224,6 @@ class _HomeState extends State<Home> {
                             ),
                             child: FlatButton(
                                 onPressed: (){
-                              print("hello");
                             }, child: Row(
                               children: <Widget>[
                                 Icon(MaterialCommunityIcons.arrow_collapse_down, size: 15,color: Color.fromARGB(1,36, 37, 130).withOpacity(1),),

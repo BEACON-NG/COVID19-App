@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:covid/models/NewsModel.dart';
 import 'package:covid/provider/NewsProvider.dart';
 import 'package:flutter/material.dart';
@@ -11,19 +13,27 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
+  @override
+  void initState() {
+    lattestNews();
+    super.initState();
+  }
+
     Map<String,bool> region = {
     "local":true,
     "international":false,
 	};
-  Future<Map<String, List<NewsModel>>> listOfNews;
-  Future<Map<String, List<NewsModel>>> lattestNews () {
-    Future<Map<String, List<NewsModel>>> result = getNewsModel();
+
+  List<dynamic> result;
+  void lattestNews () async {
+    String see = await getNewsModel(); 
     setState((){
-      listOfNews = result;
+      result = json.decode(see)["articles"];
     });
   }
-
-  GestureDetector newsCard() {
+  dynamic headline;
+  GestureDetector newsCard(dynamic article) {
+    
     return GestureDetector(
           child: Container(
             width:300,
@@ -38,10 +48,10 @@ class _NewsState extends State<News> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:<Widget>[
-                        newTitle("this is a new lattest story"),
+                        newTitle(article["title"]),
                         SizedBox(height:5),
                         Text(
-                          "1hr ago",
+                          article["publishedAt"],
                           style:TextStyle(
                             color:Colors.black,
                             fontSize:11
@@ -108,6 +118,12 @@ class _NewsState extends State<News> {
                 borderRadius: BorderRadius.all(Radius.circular(5.0))
               );
   }
+  List<Widget> listOfWidget(){
+    return result.map((news){
+      return newsCard(news);
+      }).toList();
+
+  }
   GestureDetector button(bool state,String text){
     Color themeColor = Color.fromRGBO(36, 37, 134, 1);
     Color color = state ? themeColor : Colors.white;
@@ -136,7 +152,16 @@ class _NewsState extends State<News> {
               )
             );
     }
+  dynamic getHeadlines(){
+    dynamic lattestHeadlines;
+    if(result.length >  1){
+      lattestHeadlines = json.decode(json.encode(result[0]));
+      result.removeAt(0);
+    } 
+    headline = lattestHeadlines;
+  }
   Container newsResult(){
+    getHeadlines();
     return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -169,7 +194,7 @@ class _NewsState extends State<News> {
                         decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.fill)),
                     ),
                   ),
-                  newTitle("crona don full every whee o,corona corona")
+                  newTitle(headline["title"])
                 ]
               )
             ),
@@ -177,12 +202,7 @@ class _NewsState extends State<News> {
             ,
             Container(
               child:Column(
-                children:<Widget>[
-                  newsCard(),
-                  newsCard(),
-                  newsCard(),
-                  newsCard(),
-                ]
+                children:listOfWidget()
               )
             )
               ]
@@ -222,6 +242,6 @@ class _NewsState extends State<News> {
         ),),
       ),
       backgroundColor: Colors.white,
-      body:(listOfNews == null ?  loadingSpinner() : newsResult()));
+      body:(result == null ?  loadingSpinner() : newsResult()));
   }
 }
