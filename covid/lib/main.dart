@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:get/get.dart';
 import 'package:covid/models/country.dart';
 import 'package:covid/provider/getCountries.dart';
 import 'package:covid/provider/secureStorage.dart';
@@ -31,10 +31,12 @@ void main() async{
   countries = await getCountries();
 }
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: Get.key,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -84,21 +86,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
     OneSignal.shared
         .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+       print("wait and see");
         if(titlw == "news"){
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MyHomePage(),
-              ));
-          setState(() {
-            _selectedIndex = 1;
-          });
-        }else{
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Statistics(),
-              ));
+//            Get.to(MyApp());
+//          Navigator.pushReplacement(
+//              context,
+//              MaterialPageRoute(
+//                builder: (context) => MyHomePage(),
+//              ));
+//            setState(() {
+//              _selectedIndex = 1;
+//            });
+//          }else{
+//            Get.to(Statistics());
+  //          Navigator.pushReplacement(
+  //              context,
+//              MaterialPageRoute(
+//                builder: (context) => Statistics(),
+//              ));
         }
     });
 
