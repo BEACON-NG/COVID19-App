@@ -33,6 +33,7 @@ dependencies:
   geolocator: ^3.0.1
   onesignal_flutter: ^2.3.4
   url_launcher: ^5.4.2
+  country_list_pick: ^1.0.0+2
 #  workmanager: ^0.2.0
   cron: ^0.2.2
   firebase_messaging: ^4.0.0+3
@@ -59,6 +60,8 @@ flutter:
   assets:
     - assets/images/coro.png
     - assets/images/world.png
+    - assets/images/covid.png
+    - assets/images/beacon.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
