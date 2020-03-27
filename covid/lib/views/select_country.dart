@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import '../main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectCountry extends StatefulWidget {
   @override
@@ -10,8 +11,14 @@ class SelectCountry extends StatefulWidget {
 
 class _SelectCountryState extends State<SelectCountry> {
   Future<void> _setLaunch() async {
-    final storage = new FlutterSecureStorage();
-    await storage.write(key: 'first_launch', value: 'false');
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('first_launch', false);
+  }
+
+  Future<void> _savaCountry(name, code) async {
+    final storage = FlutterSecureStorage();
+    await storage.write(key: 'country_name', value: name);
+    await storage.write(key: 'country_code', value: code);
   }
 
   @override
@@ -83,7 +90,12 @@ class _SelectCountryState extends State<SelectCountry> {
                         ),
                         child: CountryListPick(
                           onChanged: (CountryCode code) async {
-                            _setLaunch();
+                            final snackbar = new SnackBar(
+                                content:
+                                    Text('Country selected successfully !'),
+                                duration: Duration(seconds: 1));
+                            _savaCountry(code.name, code.code).then((value) =>
+                                Scaffold.of(context).showSnackBar(snackbar));
                           },
                           isShowFlag: true,
                           isShowTitle: true,
@@ -93,9 +105,9 @@ class _SelectCountryState extends State<SelectCountry> {
                       ),
                       FlatButton(
                         onPressed: () async {
-                          await _setLaunch();
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => MyHomePage()));
+                          _setLaunch().then((_) => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => MyHomePage())));
                         },
                         child: Container(
                           height: 40.0,
