@@ -1,3 +1,4 @@
+import 'package:covid/provider/secureStorage.dart';
 import 'package:flutter/material.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import '../main.dart';
@@ -10,8 +11,10 @@ class SelectCountry extends StatefulWidget {
 
 class _SelectCountryState extends State<SelectCountry> {
   Future<void> _setLaunch() async {
-    final storage = new FlutterSecureStorage();
-    await storage.write(key: 'first_launch', value: 'false');
+    print("hello");
+    await storage.write(key: "first_launch", value: "false");
+    print(await storage.read(key: "first_launch"));
+//    await storage.write(key: 'first_launch', value: 'false');
   }
 
   @override
@@ -94,8 +97,9 @@ class _SelectCountryState extends State<SelectCountry> {
                       FlatButton(
                         onPressed: () async {
                           await _setLaunch();
+                          print("what");
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => MyHomePage()));
+                              builder: (context) => MyHomePage(pageno: 0,)));
                         },
                         child: Container(
                           height: 40.0,

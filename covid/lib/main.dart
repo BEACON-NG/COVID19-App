@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:covid/models/country.dart';
 import 'package:covid/provider/getCountries.dart';
@@ -15,6 +16,8 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 //void main() => runApp(MyApp());          fe9d39d1-d20a-4437-b3f5-ac142af0d280    this is onesignal app id
 List<Country> countries;
 void main() async {
@@ -55,47 +58,56 @@ class SwitchScreen extends StatefulWidget {
 class _SwitchScreenState extends State<SwitchScreen> {
   String isFirstLaunch;
 
-  Future<void> _checkState() async {
-    final storage = new FlutterSecureStorage();
-    isFirstLaunch = await storage.read(key: 'first_launch');
-    if (isFirstLaunch == null) {
-      setState(() {});
-    }
-  }
-
+//  Future<void> _checkState() async {
+//    final storage = new FlutterSecureStorage();
+//    storage.read(key: "first_launch").then((String v)=>(print(v)));
+//    if (isFirstLaunch == null) {
+//      setState(() {});
+//    }
+//  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _checkState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return isFirstLaunch == null
-        ? SelectCountry()
-        : (isFirstLaunch == 'true' ? SelectCountry() : MyHomePage());
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
+//    _checkState();
     initnotify();
+    var initialAndroidSettings = new AndroidInitializationSettings('logo');
+    var intitialIosSettings = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(initialAndroidSettings, intitialIosSettings);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
   }
+  Future onSelectNotification(String payload) async{
+    if(payload == "news"){
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => MyHomePage(pageno:1)));
+
+    }else if(payload == "statistics"){
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => Statistics()));
+    }
+  }
+  Future _showNotificationWithSound({@required String title,@required String message, @required String payload}) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'ng.com.eleos.covid', 'BEACON', 'Live health updates custom to you!',
+        importance: Importance.Max,
+        priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      '$title',
+      '$message',
+      platformChannelSpecifics,
+      payload: '$payload',
+    );
+  }
+
 
   String titlw;
   Future<void> initnotify() async {
+
     if (!mounted) return;
 
     OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
@@ -109,51 +121,39 @@ class _MyHomePageState extends State<MyHomePage> {
 
     OneSignal.shared
         .setNotificationReceivedHandler((OSNotification notification) {
-      setState(() {
-        titlw = notification.payload.title;
-      });
+        _showNotificationWithSound(title: notification.payload.title, message: notification.payload.body, payload: notification.payload.title);
       // will be called whenever a notification is received
     });
 
-    OneSignal.shared
-        .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
-       print("wait and see");
-        if(titlw == "news"){
-//            Get.to(MyApp());
-//          Navigator.pushReplacement(
-//              context,
-//              MaterialPageRoute(
-//                builder: (context) => MyHomePage(),
-//              ));
-//            setState(() {
-//              _selectedIndex = 1;
-//            });
-//          }else{
-//            Get.to(Statistics());
-  //          Navigator.pushReplacement(
-  //              context,
-//              MaterialPageRoute(
-//                builder: (context) => Statistics(),
-//              ));
-        }
-      if (titlw == "news") {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(),
-            ));
-        setState(() {
-          _selectedIndex = 1;
-        });
-      } else {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Statistics(),
-            ));
-      }
-    });
   }
+  @override
+  Widget build(BuildContext context) {
+    return Statistics();
+//    return MyHomePage(pageno:0);
+//    return isFirstLaunch == null
+//        ? SelectCountry()
+//        : (isFirstLaunch == 'true' ? SelectCountry() : MyHomePage());
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+
+  MyHomePage({Key key, this.title, this.pageno}) : super(key: key);
+  final int pageno;
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState(pageno:pageno);
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int pageno;
+  _MyHomePageState({this.pageno});
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   final List<Widget> pages = [
 //    Home(key:PageStorageKey("home")),
@@ -165,13 +165,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final PageStorageBucket bucket = PageStorageBucket();
 
-  int _selectedIndex = 0;
+//  int _selectedIndex = pageno;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
         fixedColor: Color.fromARGB(1, 36, 37, 130).withOpacity(1),
         unselectedItemColor: Color.fromARGB(1, 36, 37, 130).withOpacity(1),
 //    iconSize: 25,
         elevation: 0,
-        onTap: (int index) => setState(() => _selectedIndex = index),
+        onTap: (int index) => setState(() => pageno = index),
         currentIndex: selectedIndex,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -191,9 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: Theme(
           data: Theme.of(context)
               .copyWith(canvasColor: Color.fromRGBO(255, 255, 255, 1)),
-          child: _bottomNavigationBar(_selectedIndex)),
+          child: _bottomNavigationBar(pageno)),
       body: PageStorage(
-        child: pages[_selectedIndex],
+        child: pages[pageno],
         bucket: bucket,
       ),
     );
