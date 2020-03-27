@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'package:covid/models/country.dart';
-import 'package:covid/provider/getCountries.dart';
 import 'package:covid/provider/secureStorage.dart';
 import 'package:covid/views/home.dart';
 import 'package:covid/views/select_country.dart';
@@ -10,15 +7,18 @@ import 'package:covid/views/news.dart';
 import 'package:flutter/material.dart';
 import 'package:covid/views/contact.dart';
 import 'package:covid/views/volunteer.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //void main() => runApp(MyApp());          fe9d39d1-d20a-4437-b3f5-ac142af0d280    this is onesignal app id
-List<Country> countries;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   var cron = Cron();
   cron.schedule(Schedule(hours: 20), () async {
     storage.delete(key: "locationdata");
@@ -26,9 +26,9 @@ void main() async {
     storage.delete(key: "country");
     storage.delete(key: "worldtotalData");
   });
-
-  runApp(MyApp());
-  countries = await getCountries();
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Beacon App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -51,14 +51,12 @@ class SwitchScreen extends StatefulWidget {
 }
 
 class _SwitchScreenState extends State<SwitchScreen> {
-  String isFirstLaunch;
+  bool isFirstLaunch;
 
   Future<void> _checkState() async {
-    final storage = new FlutterSecureStorage();
-    isFirstLaunch = await storage.read(key: 'first_launch');
-    if (isFirstLaunch == null) {
-      setState(() {});
-    }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    isFirstLaunch = prefs.getBool('first_launch') ?? true;
+    setState(() {});
   }
 
   @override
@@ -70,9 +68,10 @@ class _SwitchScreenState extends State<SwitchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return isFirstLaunch == null
-        ? SelectCountry()
-        : (isFirstLaunch == 'true' ? SelectCountry() : MyHomePage());
+    _checkState();
+    return (isFirstLaunch == null)
+        ? IsLoading()
+        : (isFirstLaunch ? SelectCountry() : MyHomePage());
   }
 }
 
@@ -136,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> pages = [
 //    Home(key:PageStorageKey("home")),
-    Home(key: PageStorageKey("home"), countries: countries),
+    Home(key: PageStorageKey("home")),
     News(key: PageStorageKey("news")),
     Contact(key: PageStorageKey("contact")),
     Volunteer(key: PageStorageKey("volunteer")),
@@ -174,6 +173,20 @@ class _MyHomePageState extends State<MyHomePage> {
       body: PageStorage(
         child: pages[_selectedIndex],
         bucket: bucket,
+      ),
+    );
+  }
+}
+
+class IsLoading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Color(0xff002657),
+          strokeWidth: 1.3,
+        ),
       ),
     );
   }
