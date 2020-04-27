@@ -1,8 +1,11 @@
 The functionality of this App grows daily with contributors working Locally and Globally to improve it: Current Functionality includes:
 
 Tracking all active Epidemics Globally (Not just COVID19) [Only COVID19 has implemented in current version 1]
-Keeping people updated through local and International trusted News Platforms [Hotlines, Test centers... etc.].
+
+Keeping people updated through local and International trusted News Platforms [Hotlines, Test centers... etc.]
+
 Keeping people updated with information from the recognized National Disease Control of their country [Only Nigeria has implemented in current version 1]
+
 Provide a platform for Donations and Volunteering towards helping those suffering from a pandemic outbreak (those sick and those infected)
 
 IMPORTANT:
