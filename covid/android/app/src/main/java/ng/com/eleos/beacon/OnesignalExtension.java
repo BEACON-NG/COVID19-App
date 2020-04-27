@@ -1,4 +1,4 @@
-package ng.com.eleos.covid;
+package ng.com.eleos.beacon;
 import com.onesignal.OSNotificationPayload;
 import com.onesignal.OSNotificationReceivedResult;
 import com.onesignal.NotificationExtenderService;

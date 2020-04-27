@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1012625043679:android:c191fb1fee91b0771f396a",
+        "android_client_info": {
+          "package_name": "ng.com.eleos.beacon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012625043679-jditbfi6laq4rol4bto298e481ip3o27.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtLZ7BRKWNnZ6jo-BBmQhHgsZkIiKWxi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012625043679-jditbfi6laq4rol4bto298e481ip3o27.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1012625043679:android:d552dd2e6129294e1f396a",
         "android_client_info": {
           "package_name": "ng.com.eleos.covid"

@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'package:covid/main.dart';
 import 'package:covid/provider/NewsProvider.dart';
+import 'package:covid/views/callRefresh.dart';
 import 'package:covid/views/selected_news.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_skeleton/flutter_skeleton.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 class News extends StatefulWidget {
   News({Key key}) : super(key: key);
 
@@ -12,22 +17,47 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
+
+
+//  bool _isnew;
   @override
   void initState() {
+//   if (_isnew == false){
     lattestNews();
+//   }
     super.initState();
   }
-
+    bool islocal = true;
     Map<String,bool> region = {
-    "local":true,
-    "international":false,
+    "Local":true,
+    "International":false,
 	};
 
+  static const Color color = Color(0xff002657);
   List<dynamic> result;
+  bool local = true;
+  bool gotdata = true;
   void lattestNews ({String country = 'ng'}) async {
-    String see = await getNewsModel(country:country); 
+    String see = await getNewsModel(country:country);
+    print("we wan see am");
+    print(see);
+    (country == "ng")?
+    (json.decode(see)["data"]!= null)?
+    setState((){
+      result = json.decode(see)["data"];
+      local = true;
+    }):setState((){
+      gotdata = false;
+      local = true;
+    })
+        :
+    (json.decode(see)["articles"]!= null)?
     setState((){
       result = json.decode(see)["articles"];
+      local = false;
+    }):setState((){
+      gotdata = false;
+      local = false;
     });
   }
   dynamic headline;
@@ -39,24 +69,29 @@ class _NewsState extends State<News> {
            * it's seleted and pass the article 
            * to the news
            */
-          onTap:()=> Navigator.push(context,MaterialPageRoute(builder:(context) => SelectedNews(data: article))),
+          onTap:()=> Navigator.push(context,MaterialPageRoute(builder:(context) => SelectedNews(data: article, local:local))),
           child: Container(
             width:300,
             decoration:boxDecoration(),
-            margin: EdgeInsets.only(bottom: 10),
+            margin: EdgeInsets.only(bottom: 20),
             padding:EdgeInsets.all(15),
             child: Row(
               children:<Widget>[
                 Expanded(
-                    flex: 8,
+                    flex: 4,
                     child: Container(
+                      margin: EdgeInsets.only(right: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:<Widget>[
                         newTitle(article["title"]),
                         SizedBox(height:5),
                         Text(
-                          article["publishedAt"],
+//                            (local)?"${new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(article["posted_at"]).toString()}":
+//                            "${new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(article["publishedAt"]).toString()}",
+                            (local)?
+                            "${DateFormat.yMMMMEEEEd().format(DateTime.parse(article["posted_at"]))}":
+                            "${DateFormat.yMMMMEEEEd().format(DateTime.parse(article["publishedAt"]))}",
                           style:TextStyle(
                             color:Colors.black,
                             fontSize:11
@@ -68,10 +103,23 @@ class _NewsState extends State<News> {
               ),
             Expanded(
               flex: 2,
-              child: Center(
                 child: Container(
-                  child:article["urlToImage"] != null ? Image.network(article["urlToImage"]): SizedBox(width:2)                // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.cover)),
-                  ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                    child:(local)?
+                    article["img"] != null ?
+                    CachedNetworkImage(
+                      imageUrl: article["img"],
+                      placeholder: (context, url) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                      errorWidget: (context, url, error) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                    ):Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),)
+                        :article["urlToImage"] != null ? CachedNetworkImage(
+                      imageUrl: article["urlToImage"],
+                      placeholder: (context, url) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                      errorWidget: (context, url, error) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                    ):Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+//                    article["urlToImage"] != null ? Image.network(article["urlToImage"], fit: BoxFit.fitWidth): SizedBox(width:2)                // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/coro.png"),fit: BoxFit.cover)),
                 ),
             )
             ]
@@ -99,7 +147,7 @@ class _NewsState extends State<News> {
                   title,
                   style:TextStyle(
                     color:Colors.black,
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600
                   )
                 )
@@ -129,7 +177,9 @@ class _NewsState extends State<News> {
    * render the card if it contains an 
    * image
    */
-  List<Widget> listOfWidget() => result.map((news) => news["urlToImage"] != null ? newsCard(news) : SizedBox(width:1)).toList();
+  List<Widget> listOfWidget() => (local)?
+  result.map((news) => news["img"] != null ? newsCard(news) : SizedBox(width:1)).toList()
+      :result.map((news) => news["urlToImage"] != null ? newsCard(news) : SizedBox(width:1)).toList();
   /**
    * this is the function resposible for creating the 
    * buttons that will switch between loca and international 
@@ -143,32 +193,54 @@ class _NewsState extends State<News> {
             /**
              * here setting the region to the buttons that was clicked
              */
-            Map<String,bool> newRegion = region;
-            newRegion[text] = true;
-            newRegion[ text == "international" ? "local":"international"] = false;
-            setState((){
-              region = newRegion;
-              result = null;
-            });
+//            Map<String,bool> newRegion = region;
+
+            Map<String,bool> newRegion;
+            if(text=="Local"){
+              newRegion = {
+                "Local":true,
+                "International":false,
+              };
+              setState(() {
+                region = newRegion;
+                result = null;
+              });
+            }else{
+              newRegion = {
+                "Local": false,
+                "International":true,
+              };
+              setState(() {
+                region = newRegion;
+                result = null;
+              });
+            }
+//            newRegion[text] = true;
+//            newRegion[ text == "International" ? "Local":"International"] = false;
+//            setState((){
+//              region = newRegion;
+//              result = null;
+//            });
             /**
              * sending request based on the region that was selected
              */
-            text == "international" ? lattestNews(country: "us"):lattestNews(country: "ng");
+            text == "International" ? lattestNews(country: "us"):lattestNews(country: "ng");
             /**
              * freeing up memory for better performance
              */
-            newRegion.clear();
+//            newRegion.clear();
           },
           child: Container(
               decoration:boxDecoration(color:color),
-              width: 120,
+              width: 150,
               height: 30,
               padding:EdgeInsets.fromLTRB(20, 6, 20, 6),
               child:Center(
                 child:Text(
                   text,
+
                   style:TextStyle(
-                    color:state ? Colors.white : themeColor 
+                    color:state ? Colors.white : themeColor,
                     )
                   ),
                 )
@@ -186,11 +258,20 @@ class _NewsState extends State<News> {
           the headline
 
          */
-        if(result[i]["urlToImage"] != null){
-          lattestHeadlines = result[i];
-          result.removeAt(i);
-          break;
+        if(local){
+          if(result[i]["img"] != null){
+            lattestHeadlines = result[i];
+            result.removeAt(i);
+            break;
+          }
+        }else{
+          if(result[i]["urlToImage"] != null){
+            lattestHeadlines = result[i];
+            result.removeAt(i);
+            break;
+          }
         }
+
     }
     /**
      * assigning the matched lattestHeadlines to the 
@@ -230,34 +311,64 @@ class _NewsState extends State<News> {
                        * this 2 buttons are responsible for swithing
                        * between local and international news 
                        */
-                      for(var item in ["local","international"])button(region[item],item),
+                      for(var item in ["Local","International"])button(region[item],item),
                     ]
                   )
                 ),
-                headLineText("Lattest news"),
+                Container(
+                    margin: EdgeInsets.only(left: 10, top: 10),
+                    child: headLineText("Latest news")),
                 /**
                  * this Container is responsible for rendering the 
                  * headline image and text
                  */
-                Container(
-                  decoration: boxDecoration(),
-                  width:MediaQuery.of(context).size.width/10 * 8,
-                  height:230,
-                  margin: EdgeInsets.symmetric(vertical: 2),
-                  padding:EdgeInsets.all(5),
-                  child:Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children:<Widget>[
-                      Expanded(
-                        child: Container(
-                            child:Image.network(headline["urlToImage"])
+                GestureDetector(
+                  onTap:()=> Navigator.push(context,MaterialPageRoute(builder:(context) => SelectedNews(data: headline, local:local))),
+                  child: Container(
+                    decoration: boxDecoration(),
+                    width:MediaQuery.of(context).size.width/10 * 8,
+                    height:230,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    padding:EdgeInsets.all(5),
+                    child:Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children:<Widget>[
+                        Expanded(
+                          child: Container(
+                            decoration:BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                    ),
+                              child:(local)?
+                              headline["img"] != null ?
+                              CachedNetworkImage(
+                                imageUrl: headline["img"],
+                                placeholder: (context, url) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                                errorWidget: (context, url, error) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                              ):
+                              Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),)
+//                            Image.network(headline["img"],
+//                            fit: BoxFit.fill)
+                                  :
+                              headline["urlToImage"] != null ?
+                              CachedNetworkImage(
+                                imageUrl: headline["urlToImage"],
+                                placeholder: (context, url) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                                errorWidget: (context, url, error) => Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),),
+                              ):
+                              Container(child: Image.asset("assets/images/beacon.png"),color: color,padding: EdgeInsets.all(20),)
+//                            Image.network(headline["urlToImage"], fit: BoxFit.fill)
+                          ),
                         ),
-                      ),
-                      newTitle(headline["title"])
-                    ]
-                  )
+                        Container(
+                            margin: EdgeInsets.only(left: 5, bottom: 10, top: 10, right: 5),
+                            child: newTitle(headline["title"]))
+                      ]
+                    )
+                  ),
                 ),
-                headLineText("Hot news")
+                Container(
+                    margin: EdgeInsets.only(left: 10, top: 10),
+                    child: headLineText("Hot news"))
                 ,
                 /**
                  * this container is responsible for 
@@ -296,6 +407,11 @@ class _NewsState extends State<News> {
 
   @override
   Widget build(BuildContext context) {
+//    var doRefresh = CallRefresh.of(context).shouldRefresh;
+//    if(doRefresh==true){
+//      setState(() {result= null;});
+//      lattestNews();
+//    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -315,6 +431,63 @@ class _NewsState extends State<News> {
           comes
 
       */
-      body:(result == null ?  loadingSpinner() : newsResult()));
+      body:(result == null) ?
+//      loadingSpinner()
+      (gotdata)?
+      Container(
+        child: CardListSkeleton(
+          style: SkeletonStyle(
+            theme: SkeletonTheme.Light,
+            isShowAvatar: false,
+            isCircleAvatar: false,
+            barCount: 4,
+          ),
+        ),
+      ):Center(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: MediaQuery.of(context).size.height*0.3,),
+            Text("Error while Fetching News",style: TextStyle(color:Color.fromRGBO(36, 37, 130, 1), fontSize:20)),
+            Container(
+              margin: EdgeInsets.only(top:20),
+              width: MediaQuery.of(context).size.width*0.4,
+              child: RaisedButton(
+                onPressed: (){
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => MyHomePage(pageno: 1)));
+//                  newRegion = {
+//                    "Local": false,
+//                    "International":true,
+//                  };
+//                  setState(() {
+//                    region = newRegion;
+//                    result = null;
+//                  });
+                },
+                color: Color.fromRGBO(36, 37, 130, 1),child: Text("Retry",style: TextStyle(color: Colors.white,)),),
+            ),
+            Container(
+              margin: EdgeInsets.only(top:5),
+              width: MediaQuery.of(context).size.width*0.4,
+              child: RaisedButton(
+                onPressed: (){
+//                  Navigator.of(context)
+//                      .push(MaterialPageRoute(builder: (context) => MyHomePage(pageno: 1)));
+                  setState(() {
+                    region = {
+                      "Local": false,
+                      "International":true,
+                    };
+                    gotdata = true;
+                    result = null;
+                    lattestNews(country: "us");
+                  });
+                },
+                color: Color.fromRGBO(36, 37, 130, 1),child: Text("International News",style: TextStyle(color: Colors.white,)),),
+            )
+          ],
+        ),
+      )
+          : newsResult());
   }
 }

@@ -11,16 +11,18 @@ class SelectCountry extends StatefulWidget {
 }
 
 class _SelectCountryState extends State<SelectCountry> {
-  Future<void> _setLaunch() async {
+  _setLaunch({CountryCode codes}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('first_launch', false);
+    prefs.setString("country_name", codes.name);
+    prefs.setString("country_code", codes.code);
   }
-
-  Future<void> _savaCountry(name, code) async {
-    final storage = FlutterSecureStorage();
-    await storage.write(key: 'country_name', value: name);
-    await storage.write(key: 'country_code', value: code);
-  }
+  CountryCode codes;
+//  _savaCountry(name, code) async {
+//    final storage = FlutterSecureStorage();
+//    await storage.write(key: 'country_name', value: name);
+//    await storage.write(key: 'country_code', value: code);
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +93,23 @@ class _SelectCountryState extends State<SelectCountry> {
                         ),
                         child: CountryListPick(
                           onChanged: (CountryCode code) async {
-                            final snackbar = new SnackBar(
-                                content:
+//                            final snackbar = new SnackBar(
+//                                content:
+//                                    Text('Country selected successfully !'),
+//                                duration: Duration(seconds: 1));
+//                            _savaCountry(code.name, code.code).then((value) =>
+//                                Scaffold.of(context).showSnackBar(
+//                                  new SnackBar(content:
+//                                    Text('Country selected successfully !'),
+//                                duration: Duration(seconds: 1)))
+//                                );
+                          setState(() {
+                            codes=code;
+                          });
+                          Scaffold.of(context).showSnackBar(
+                                  new SnackBar(content:
                                     Text('Country selected successfully !'),
-                                duration: Duration(seconds: 1));
-                            _savaCountry(code.name, code.code).then((value) =>
-                                Scaffold.of(context).showSnackBar(snackbar));
+                                duration: Duration(seconds: 1)));
                           },
                           isShowFlag: true,
                           isShowTitle: true,
@@ -106,7 +119,7 @@ class _SelectCountryState extends State<SelectCountry> {
                       ),
                       FlatButton(
                         onPressed: () async {
-                          _setLaunch().then((_) => Navigator.of(context).push(
+                         await _setLaunch(codes: codes).then((_) => Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (context) => MyHomePage())));
                         },

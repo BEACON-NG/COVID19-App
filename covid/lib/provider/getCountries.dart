@@ -8,6 +8,7 @@ Future<List<Country>> getCountries() async{
   LocationBasedData lbd = await getLocationBasedData();
   List<Country> countries = List();
 
+  
   List<Country> checkCountries = List();
   lbd.locations.forEach((Location local)=> countries.add(Country(name: local.country, code: local.countryCode)));
   checkCountries.addAll(countries.where((a)=>checkCountries.every((b)=>a.name!=b.name)));

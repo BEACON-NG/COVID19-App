@@ -1,4 +1,4 @@
-package ng.com.eleos.covid;
+package ng.com.eleos.beacon;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;

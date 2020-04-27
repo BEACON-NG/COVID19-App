@@ -1,32 +1,28 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:covid/main.dart';
 import 'package:covid/models/LocationBasedData.dart';
 import 'package:covid/models/country.dart';
-import 'package:covid/provider/getCountries.dart';
 import 'package:covid/provider/getLocationBasedData.dart';
 import 'package:covid/provider/getUserLocation.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:covid/models/Worldtotal.dart';
-import 'package:covid/provider/getWorldData.dart';
 import 'package:image/image.dart' as imaged;
 import 'package:covid/models/Covids.dart';
-import 'package:covid/provider/getData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_skeleton/flutter_skeleton.dart';
-import 'package:open/open.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdfw;
+import 'package:intl/intl.dart';
 
 
 String s = "";
 String country = "Nigeria";
+final formatter = new NumberFormat("#,###");
 class Statistics extends StatefulWidget {
   Statistics({Key key}) : super(key: key);
 
@@ -37,23 +33,24 @@ class Statistics extends StatefulWidget {
 class _StatisticsState extends State<Statistics> {
   Map<String, List<Covids>> see;
   File _imageFile;
-  bool full = true;
+  bool full = false;
 
-  List<Country> countries = List();
+//  List<Country> countries = List();
 //Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
   check() async{
     String counts = await getUserLocation();
-    List<Country> contries = await getCountries();
+//    List<Country> contries = await getCountries();
     setState(() {
       country = counts;
-      countries = contries;
+//      countries = contries;
     });
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     check();
   }
   @override
@@ -70,7 +67,7 @@ class _StatisticsState extends State<Statistics> {
           setState(() {full = false;});
         },),
         title: Text("Statistics", style: TextStyle(
-          color: Color.fromRGBO(36, 37, 130, 1),fontSize: 40,
+          color: Color.fromRGBO(36, 37, 130, 1),fontSize: 30,
         ),),
       ):
       PreferredSize(child: Container(
@@ -84,13 +81,13 @@ class _StatisticsState extends State<Statistics> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MyHomePage(),
+                      builder: (context) => MyHomePage(pageno: 0,),
                     ));
               },),
               backgroundColor: Colors.transparent,
               elevation: 0,
               centerTitle: true,
-              title: Text("COVID'19 Update", style: TextStyle(
+              title: Text("Global Epidemic Tracker", style: TextStyle(
                 color: Colors.white,fontSize: 24,fontWeight: FontWeight.w400,
               ),),
             ),
@@ -113,37 +110,91 @@ class _StatisticsState extends State<Statistics> {
         FutureBuilder <LocationBasedData>(
             future: getLocationBasedData(),
             builder: (context, snapshot){
-            if (snapshot.hasError) print(snapshot.error);
-            List<Location> cases = List();
-            double perconfirmed = 0;
-            double perdeaths = 0;
-            double perrecovered = 0;
-            String perincrease;
-            Location dlocale;
-            double worldimprovement;
-            String strworld;
-            List<Country> cuntries;
-            if (snapshot.hasData) {
-              snapshot.data.locations.forEach((Location l)=>((l.country == country)?dlocale = l : print("not found")));
-              cuntries = countries;
+              if (snapshot.hasError) print(snapshot.error);
+              List<Location> cases = List();
+              double perconfirmed = 0;
+              double perdeaths = 0;
+              double perrecovered = 0;
+              String perincrease;
+              int confirmationcases = 0;
+              Location dlocale;
+              double worldimprovement;
+              String strworld;
+              LocationBasedData ll;
+              List<Country> cuntries;
+              int ind = 0;
+              List<Country> checkCountries = List();
+              if (snapshot.hasData) {
+                ll = snapshot.data;
+                print((ll != null)? ll.locations.indexWhere((Location l)=> l.country == country):0);
+                print("wait for it sha");
+                if(ll != null){
+                  if(
+                  ll.locations.indexWhere((Location l)=> l.country == country) != -1 &&
+                  ll.locations.indexWhere((Location l)=> l.country == country) >= 0
+                      && ll.locations.indexWhere((Location l)=> l.country == country)<= ll.locations.length){
+                    ind = ll.locations.indexWhere((Location l)=> l.country == country);
+                    dlocale =
+                    ll.locations[ind];
+                  }else{
+                    ind = 0;
+                    dlocale =
+                    ll.locations[ind];
+                  }
+                }
+                print((ll != null)? ll.locations.indexWhere((Location l)=> l.country == country):0);
+                List<Country> cntries = List();
+                ll.locations.forEach((Location local)=> cntries.add(Country(name: local.country, code: local.countryCode)));
+                checkCountries.addAll(cntries.where((a)=>checkCountries.every((b)=>a.name!=b.name)));
+
+//                cuntries = countries;
               int total = dlocale.latest.confirmed;
+              print(total);
               int deaths = dlocale.latest.deaths;
               int recovered = dlocale.latest.recovered;
-              perconfirmed = total/total;
-              perdeaths = deaths / total;
-              perrecovered = recovered / total;
-
-//               to get pecentage nIncrease
-//              int pos = snapshot.data["Nigeria"].length-2;
-//            int second = snapshot.data["Nigeria"].elementAt(pos).confirmed;
+              if(total!=0){
+                int case1 = deaths + recovered;
+                confirmationcases = total - case1;
+                if(confirmationcases<=total && deaths<=total && recovered <= total){
+                  perconfirmed = confirmationcases/total;
+                  perdeaths = deaths / total;
+                  perrecovered = recovered / total;
+                }else{
+                  perconfirmed = 0;
+                  perdeaths = 0;
+                  perrecovered = 0;
+                }
+                print(perrecovered);
+                print(perdeaths);
+                print(perconfirmed);
+                print(total);
+              }else{
+                perconfirmed = 0;
+                perdeaths = 0;
+                perrecovered = 0;
+              }
               int second = dlocale.yesterday.confirmed;
             int calc = total - second;
-            double dcalc  = calc/total;
+            print(total);
+            print("and");
+            print(calc);
+            double dcalc;
+            if(total != 0) {
+              dcalc  = calc/total;
+
+              total = 0;
+              deaths = 0;
+              recovered = 0;
+            }else{
+              dcalc=0;
+            }
             double increase = dcalc * 100;
             perincrease = increase.toStringAsFixed(2);
 
 //            to get world wide worldimprovement
-            double wdi = snapshot.data.latest.recovered/snapshot.data.latest.confirmed;
+                int lost = ll.latest.deaths + ll.latest.recovered;
+                int clases = ll.latest.confirmed - lost;
+            double wdi = clases/ll.latest.confirmed;
               double ss = double.parse(wdi.toStringAsFixed(2));
               worldimprovement = ss;
               double str = worldimprovement * 100;
@@ -162,11 +213,7 @@ class _StatisticsState extends State<Statistics> {
             });
             cases.add(max);
             loc.removeAt(loc.indexOf(max));
-          }
-          cases.forEach((d){
-            print(d.latest.confirmed);
-          });
-            }
+          }}
             return snapshot.hasData ?
             Screenshot(
               controller: screenshotController,
@@ -191,11 +238,46 @@ class _StatisticsState extends State<Statistics> {
                   ),
                   Container(
                     margin: EdgeInsets.only(top:30,left: MediaQuery.of(context).size.width*0.05, right: MediaQuery.of(context).size.width*0.05),
-                    padding: EdgeInsets.only(top:5, bottom: 5, left: 15),
+                    padding: EdgeInsets.only(left: 15),
                     color: Color.fromARGB(1,36, 37, 130).withOpacity(0.3),
-                    child: Text("$country", style: TextStyle(
-                      color: Colors.black,fontSize: 25,
-                    ),),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("$country", style: TextStyle(
+                          color: Colors.black,fontSize: 20,
+                        ),),
+                        IconButton(icon: Icon(Ionicons.ios_arrow_down, size: 14,),
+                            onPressed: (){
+                              showMaterialDialog<String>(
+                                context: context,
+                                child: AlertDialog(
+                                  content: Container(
+                                      height: MediaQuery.of(context).size.height*0.7,
+                                      child: ListView.builder(itemBuilder: (BuildContext context, int i){
+                                        List<String> cvlist = List();
+                                        checkCountries.forEach((Country c) => cvlist.add(c.name));
+                                        cvlist.sort((a,b)=>a.compareTo(b));
+                                        return FlatButton(onPressed: (){
+                                          setState(() {
+                                            country = cvlist[i];
+                                          });
+                                          Navigator.pop(context, 'cancel');
+                                        }, child: Text("${cvlist[i]}", style: TextStyle(color: Colors.grey),));
+                                      }, itemCount: checkCountries.length)),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: const Text('CANCEL'),
+                                      onPressed: () {
+                                        Navigator.pop(context, 'cancel');
+                                      },
+                                    ),
+
+                                  ],
+                                ),
+                              );
+                            })
+                      ],
+                    ),
                   ),
                   Container(
                     height: 170,
@@ -221,10 +303,10 @@ class _StatisticsState extends State<Statistics> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
-                                            Text("Total Cases", style: TextStyle(
+                                            Text("Active Cases", style: TextStyle(
                                               color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
-                                            Text("${dlocale.latest.confirmed}", style: TextStyle(
+                                            Text("${formatter.format(confirmationcases)}", style: TextStyle(
                                               color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
                                           ],
@@ -254,7 +336,7 @@ class _StatisticsState extends State<Statistics> {
                                           Text("Deaths", style: TextStyle(
                                             color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                           ), ),
-                                          Text("${dlocale.latest.deaths}", style: TextStyle(
+                                          Text("${formatter.format(dlocale.latest.deaths)}", style: TextStyle(
                                             color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                           ), ),
                                         ],
@@ -283,7 +365,7 @@ class _StatisticsState extends State<Statistics> {
                                           Text("Recovered", style: TextStyle(
                                             color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                           ), ),
-                                          Text("${dlocale.latest.recovered}", style: TextStyle(
+                                          Text("${formatter.format(dlocale.latest.recovered)}", style: TextStyle(
                                             color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                           ), ),
                                         ],
@@ -339,6 +421,9 @@ class _StatisticsState extends State<Statistics> {
 
 //                                    final Directory pat = await getApplicationDocumentsDirectory();
                                     final Directory pat = await getExternalStorageDirectory();
+                                    print(pat.path);
+                                    print("tryong to see if");
+                                    print(pat.absolute.path);
                                     final Directory beacon = Directory("${pat.path}/BEACON");
                                     String pas;
                                     if(await beacon.exists()){ pas = beacon.path; }else{
@@ -418,7 +503,7 @@ class _StatisticsState extends State<Statistics> {
                           Container(
                             width: MediaQuery.of(context).size.width*0.3,
                             child: Column(children: <Widget>[
-                              Text("${snapshot.data.latest.confirmed}",
+                              Text("${formatter.format(ll.latest.confirmed)}",
                               style: TextStyle(
                                 color: Colors.black,fontSize: 25,fontWeight: FontWeight.w800,)),
                               Text("Total \nRecorded", style: TextStyle(
@@ -430,7 +515,7 @@ class _StatisticsState extends State<Statistics> {
                           Container(
                             width: MediaQuery.of(context).size.width*0.3,
                             child: Column(children: <Widget>[
-                              Text("${snapshot.data.latest.deaths}",
+                              Text("${formatter.format(ll.latest.deaths)}",
                                   style: TextStyle(
                                     color: Colors.black,fontSize: 25,fontWeight: FontWeight.w800,)),
                               Text("Total \nDeaths", style: TextStyle(
@@ -441,7 +526,7 @@ class _StatisticsState extends State<Statistics> {
                           Container(
                             width: MediaQuery.of(context).size.width*0.3,
                             child: Column(children: <Widget>[
-                              Text("${snapshot.data.latest.recovered}",
+                              Text("${formatter.format(ll.latest.recovered)}",
                                   style: TextStyle(
                                     color: Colors.black,fontSize: 25,fontWeight: FontWeight.w800,)),
                               Text("Total \nRecovery", style: TextStyle(
@@ -463,7 +548,7 @@ class _StatisticsState extends State<Statistics> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Total Cases", style: TextStyle(
+                              Text("Active Cases", style: TextStyle(
                                 color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                               ), ),
 //                              worldimprovement * 100
@@ -525,13 +610,16 @@ class _StatisticsState extends State<Statistics> {
                                   content: Container(
                                       height: MediaQuery.of(context).size.height*0.7,
                                       child: ListView.builder(itemBuilder: (BuildContext context, int i){
+                                        List<String> cvlist = List();
+                                        checkCountries.forEach((Country c) => cvlist.add(c.name));
+                                        cvlist.sort((a,b)=>a.compareTo(b));
                                           return FlatButton(onPressed: (){
                                             setState(() {
-                                              country = countries[i].name;
+                                              country = cvlist[i];
                                             });
                                             Navigator.pop(context, 'cancel');
-                                          }, child: Text("${countries[i].name}", style: TextStyle(color: Colors.grey),));
-                                      }, itemCount: countries.length)),
+                                          }, child: Text("${cvlist[i]}", style: TextStyle(color: Colors.grey),));
+                                      }, itemCount: checkCountries.length)),
                                   actions: <Widget>[
                                     FlatButton(
                                       child: const Text('CANCEL'),
@@ -572,10 +660,10 @@ class _StatisticsState extends State<Statistics> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
-                                            Text("Total Cases", style: TextStyle(
+                                            Text("Active Cases", style: TextStyle(
                                               color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
-                                            Text("${dlocale.latest.confirmed}", style: TextStyle(
+                                            Text("${(dlocale!= null)?formatter.format(confirmationcases):0}", style: TextStyle(
                                               color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
                                           ],
@@ -605,7 +693,7 @@ class _StatisticsState extends State<Statistics> {
                                             Text("Deaths", style: TextStyle(
                                               color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
-                                            Text("${dlocale.latest.deaths}", style: TextStyle(
+                                            Text("${(dlocale!= null)?formatter.format(dlocale.latest.deaths):0}", style: TextStyle(
                                               color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
                                           ],
@@ -634,7 +722,7 @@ class _StatisticsState extends State<Statistics> {
                                             Text("Recovered", style: TextStyle(
                                               color: Color.fromRGBO(36, 37, 130, 1),fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
-                                            Text("${dlocale.latest.recovered}", style: TextStyle(
+                                            Text("${(dlocale!= null)?formatter.format(dlocale.latest.recovered):0}", style: TextStyle(
                                               color: Colors.black87,fontSize: 15,fontWeight: FontWeight.w700,
                                             ), ),
                                           ],
@@ -690,6 +778,9 @@ class _StatisticsState extends State<Statistics> {
 
 //                                    final Directory pat = await getApplicationDocumentsDirectory();
                                   final Directory pat = await getExternalStorageDirectory();
+                                  print(pat.path);
+                                  print("tryong to see if");
+                                  print(pat.absolute.path);
                                   final Directory beacon = Directory("${pat.path}/BEACON");
                                   String pas;
                                   if(await beacon.exists()){ pas = beacon.path; }else{
@@ -818,7 +909,7 @@ class _StatisticsState extends State<Statistics> {
                               child: Container(
                                 width:80,
                                 height: 35,
-                                child:Center(child: Text("  SEE MORE \t +", style: TextStyle(color:Colors.grey.withOpacity(0.8)))),
+                                child:Center(child: Text("  SEE MORE \t+", style: TextStyle(color:Colors.grey.withOpacity(0.8)))),
                                 ),
                             ),
                           ],),
