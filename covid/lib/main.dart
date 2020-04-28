@@ -19,7 +19,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-//void main() => runApp(MyApp());          fe9d39d1-d20a-4437-b3f5-ac142af0d280    this is onesignal app id
+//void main() => runApp(MyApp());          api-id-was-removed-reach-out-for-it    this is onesignal app id
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -132,7 +132,7 @@ class _SwitchScreenState extends State<SwitchScreen> {
 
 //    OneSignal.shared.setRequiresUserPrivacyConsent(true);
 
-    OneSignal.shared.init("fe9d39d1-d20a-4437-b3f5-ac142af0d280", iOSSettings: {
+    OneSignal.shared.init("api-id-was-removed-reach-out-for-it", iOSSettings: {
       OSiOSSettings.autoPrompt: false,
       OSiOSSettings.inAppLaunchUrl: true
     });
